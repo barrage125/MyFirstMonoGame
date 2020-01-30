@@ -14,12 +14,15 @@ namespace MyFirstMonoGame
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         private Texture2D image;
+        private Texture2D idle;
         private double playerPosX;
         private double playerPosY;
         private double playerTargetX;
         private double playerTargetY;
         private bool rightPress;
         private int window;
+        private int count;
+        private int frame;
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -39,6 +42,8 @@ namespace MyFirstMonoGame
             base.Initialize();
             playerPosX = 384;
             playerPosY = 224;
+            frame = 56;
+            count = 0;
             playerTargetX = playerPosX;
             playerTargetY = playerPosY;
         }
@@ -52,6 +57,7 @@ namespace MyFirstMonoGame
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
             image = Content.Load<Texture2D>("Player");
+            idle = Content.Load<Texture2D>("2x");
             // TODO: use this.Content to load your game content here
         }
 
@@ -106,27 +112,31 @@ namespace MyFirstMonoGame
             }
             if (Keyboard.IsPressed(Keys.D))
             {
-                //playerTargetX += 5;
-                //rightPress = true;
-                //window = 500;
+                playerTargetX += 5;
             }
             //Keyboard.GetState();
             //Debug.WriteLine("Help!");
             if (Keyboard.HasBeenPressed(Keys.D))
             {
-                Debug.WriteLine("Help!");
-                playerTargetX += 20;
-                //rightPress = false;
-                //window = 0;
+                if (window <= 0)
+                {
+                    rightPress = true;
+                    window = 10;
+                }
+                else if (window > 0 && rightPress){
+                    playerTargetX += 50;
+                    rightPress = false;
+                    window = 0;
+                }
             }
 
             playerPosX += ((playerTargetX - playerPosX) * 0.1);
             playerPosY += ((playerTargetY - playerPosY) * 0.1);
 
-            //if (window > 0)
-            //{
-            //    window--;
-            //}
+            if (window > 0)
+            {
+                window--;
+            }
             base.Update(gameTime);
         }
 
@@ -141,8 +151,19 @@ namespace MyFirstMonoGame
             // TODO: Add your drawing code here
             spriteBatch.Begin();
             spriteBatch.Draw(image, new Rectangle((int)playerPosX, (int)playerPosY, 32, 32), Color.White);
+            //spriteBatch.Draw(new Texture2D(), new Rectangle((int)playerPosX, (int)playerPosY, 32, 32), Color.White);
+            spriteBatch.Draw(idle, new Vector2(100,100), new Rectangle(frame, 52, 145, 152), Color.White, 0f,
+Vector2.Zero, 1.25f, SpriteEffects.None, 0f);
+            count++;
+            if (count % 5 == 0)
+            {
+                frame += 163;
+                if (count % 15 == 0)
+                    frame -= 1;
+            }
+            if (frame > 1849)
+                frame = 55;
             spriteBatch.End();
-
             base.Draw(gameTime);
         }
     }
